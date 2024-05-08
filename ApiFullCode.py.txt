@@ -1,0 +1,74 @@
+import RPi.GPIO as GPIO
+import time
+import os
+import io
+from google.cloud import vision
+import pandas as pd
+from google.cloud import vision_v1
+
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = r"ServiceAccountToken.json"
+
+SENSOR_PIN = 12
+
+def api(image_path):
+    client = vision.ImageAnnotatorClient()
+
+    # Read the image content
+    with io.open(image_path, 'rb') as image_file:
+        content = image_file.read()
+
+    # Create an image instance
+    image = vision_v1.Image(content=content)
+
+    # Annotate Image Response
+    response = client.text_detection(image=image)  
+    df = pd.DataFrame(columns=['locale', 'description'])
+
+    texts = response.text_annotations
+    for text in texts:
+        df.loc[len(df)] = {'locale': text.locale, 'description': text.description}
+
+    return df['description'][0]
+
+def setup():
+    GPIO.setmode(GPIO.BOARD)
+    GPIO.setup(SENSOR_PIN, GPIO.IN)
+    GPIO.setup(11, GPIO.OUT)
+    GPIO.setup(13, GPIO.OUT)
+    GPIO.setwarnings(False)
+
+def handle_motion():
+    global img_counter
+    comand = "fswebcam -S 10 "
+    data = "image" + str(img_counter) + ".jpg"
+    comand = comand + data
+    img_counter += 1
+    os.system(comand)
+    return data
+
+def loop():
+    while True:
+        if GPIO.input(SENSOR_PIN) == 1:
+            GPIO.output(11, GPIO.HIGH)
+            GPIO.output(13, GPIO.LOW)
+            data = handle_motion()
+            text = api(data)
+            print("Detected text:", text)
+            time.sleep(10)
+        else:
+            GPIO.output(11, GPIO.LOW)
+            GPIO.output(13, GPIO.HIGH)
+        time.sleep(1)
+
+def cleanup():
+    GPIO.cleanup()
+    GPIO.output(11, GPIO.LOW)
+    GPIO.output(13, GPIO.LOW)
+
+if __name__ == "__main__":
+    img_counter = 0
+    setup()
+    try:
+        loop()
+    except KeyboardInterrupt:
+        cleanup()
