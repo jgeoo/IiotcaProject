@@ -4,5 +4,5 @@ A rasppberry pi 3 project with pir motion sensor and a usb camera which when mot
 
 
 
-In this project i used a PIR sensor for dectecting motion, when motion is detected the sensor starts the camera which takes a photo, after that using the Cloud vision OCR API i detect the text from the image transfering it to firebase.
+In this project i used a PIR sensor for detecting motion, when motion is detected the sensor starts the camera which takes a photo, after that using the Cloud vision OCR API i detect the text from the image transfering it to firebase.
 The hole purpose of the project is to identify car plates and have a website with all car plates that were dectede by the motion sensor.
