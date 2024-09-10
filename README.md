@@ -1,6 +1,7 @@
 # IiotcaProject
 A rasppberry pi 3 project with pir motion sensor and a usb camera which when motion detected take a photo and reads the text from the image moving it to cloud on a website
-![image](https://github.com/jgeoo/IiotcaProject/assets/115550539/d736f249-f974-4c4b-9d96-b36ccb87c7ce)
+
+![Skecth](https://github.com/user-attachments/assets/05ca6de4-8a6a-41c7-a29c-19fc8ccdea82)
 
 
 
